@@ -10,7 +10,7 @@ public class PlayerFactory {
         this.scanner = scanner;
     }
 
-    public Player getPlayer(int playerType) {
+    public AbstractPlayer getPlayer(int playerType) {
         if (playerType == PlayerType.KEYBOARD_INPUT) {
             return new KeyboardInputPlayer(scanner);
         }

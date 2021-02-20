@@ -1,7 +1,7 @@
 package org.gds;
 
 import org.gds.player.PlayerType;
-import org.gds.player.Player;
+import org.gds.player.AbstractPlayer;
 import org.gds.player.PlayerFactory;
 
 import java.util.Map;
@@ -9,31 +9,32 @@ import java.util.Scanner;
 
 public class RealOne {
 
-    private final static char RED = 'R';
-    private final static char YELLOW = 'Y';
+    // TODO: maybe make these private again, or move these
+    public final static char RED = 'R';
+    public final static char YELLOW = 'Y';
 
     public static void main(String[] args) {
         final Scanner scanner = new Scanner(System.in);
         PlayerFactory playerFactory = new PlayerFactory(scanner);
 
         int gameChoice = promptForGameChoice(scanner);
-        Player opponentPlayer = playerFactory.getPlayer(gameChoice);
-        Player firstPlayer = playerFactory.getPlayer(PlayerType.KEYBOARD_INPUT);
+        AbstractPlayer opponentPlayer = playerFactory.getPlayer(gameChoice);
+        AbstractPlayer firstPlayer = playerFactory.getPlayer(PlayerType.KEYBOARD_INPUT);
         GameState gameState = GameState.getInstance();
 
         char playerColor = RED;
         while (!gameState.isGameOver(playerColor)) {
-            drawBoard();
+            gameState.drawBoard();
 
             playerColor = RED;
-            firstPlayer.makeMove(playerColor);
+            firstPlayer.move(playerColor);
             if (gameState.isGameOver(playerColor)) {
                 break;
             }
-            drawBoard();
+            gameState.drawBoard();
 
             playerColor = YELLOW;
-            opponentPlayer.makeMove(playerColor);
+            opponentPlayer.move(playerColor);
         }
     }
 
@@ -50,23 +51,5 @@ public class RealOne {
         System.out.println();
         System.out.println("You choose option: " + gameChoice + ") " + PlayerType.getValue(gameChoice));
         return gameChoice;
-    }
-
-    private static void drawBoard() {
-        char[][] grid = GameState.getInstance().getGameGrid();
-
-        System.out.println();
-        System.out.println("---------------");
-        for (int row = 0; row < grid.length; row++){
-            System.out.print("|");
-            for (int col = 0; col < grid[0].length; col++){
-                System.out.print(grid[row][col]);
-                System.out.print("|");
-            }
-            System.out.println();
-            System.out.println("---------------");
-        }
-        System.out.println(" 0 1 2 3 4 5 6");
-        System.out.println();
     }
 }

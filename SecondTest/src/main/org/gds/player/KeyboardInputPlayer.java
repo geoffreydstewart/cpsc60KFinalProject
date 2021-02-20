@@ -1,10 +1,11 @@
 package org.gds.player;
 
-import org.gds.GameState;
-
 import java.util.Scanner;
 
-public class KeyboardInputPlayer implements Player {
+/**
+ * This is a Concrete class in the Template design pattern
+ */
+public class KeyboardInputPlayer extends AbstractPlayer {
 
     private final Scanner scanner;
 
@@ -13,9 +14,7 @@ public class KeyboardInputPlayer implements Player {
     }
 
     @Override
-    public void makeMove(char playerColor) {
-        GameState gameState = GameState.getInstance();
-
+    public int getMoveChoice(char playerColor) {
         int columnChoice = 0;
         boolean validMove = false;
         while (!validMove) {
@@ -32,7 +31,7 @@ public class KeyboardInputPlayer implements Player {
                 System.out.println();
             }
         }
-        gameState.playMove(playerColor, columnChoice);
-        gameState.incrementTurns();
+        return columnChoice;
+
     }
 }
