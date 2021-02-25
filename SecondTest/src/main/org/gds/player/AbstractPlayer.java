@@ -9,18 +9,23 @@ public abstract class AbstractPlayer {
 
     GameState gameState = GameState.getInstance();
 
-    /**
-     * This is the template method from the Template design pattern
-     * @param playerColor
-     */
-    public final void move(char playerColor) {
-        int columnChoice = getMoveChoice(playerColor);
-        completeMove(playerColor, columnChoice);
+    final char playerColor;
+
+    AbstractPlayer(char playerColor) {
+        this.playerColor = playerColor;
     }
 
-    abstract int getMoveChoice(char playerColor);
+    /**
+     * This is the template method from the Template design pattern
+     */
+    public final void move() {
+        int columnChoice = getMoveChoice();
+        completeMove(columnChoice);
+    }
 
-    void completeMove(char playerColor, int columnChoice) {
+    abstract int getMoveChoice();
+
+    void completeMove(int columnChoice) {
         gameState.playMove(playerColor, columnChoice);
         gameState.incrementTurns();
     }

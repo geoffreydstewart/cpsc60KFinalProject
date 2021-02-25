@@ -18,23 +18,27 @@ public class RealOne {
         PlayerFactory playerFactory = new PlayerFactory(scanner);
 
         int gameChoice = promptForGameChoice(scanner);
-        AbstractPlayer opponentPlayer = playerFactory.getPlayer(gameChoice);
-        AbstractPlayer firstPlayer = playerFactory.getPlayer(PlayerType.KEYBOARD_INPUT);
+
+        final char firstPlayerColor = RED;
+        final char opponentPlayerColor = YELLOW;
+        AbstractPlayer firstPlayer = playerFactory.getPlayer(PlayerType.KEYBOARD_INPUT, firstPlayerColor);
+        AbstractPlayer opponentPlayer = playerFactory.getPlayer(gameChoice, opponentPlayerColor);
+
         GameState gameState = GameState.getInstance();
 
-        char playerColor = RED;
+        char playerColor = firstPlayerColor;
         while (!gameState.isGameOver(playerColor)) {
             gameState.drawBoard();
 
-            playerColor = RED;
-            firstPlayer.move(playerColor);
+            playerColor = firstPlayerColor;
+            firstPlayer.move();
             if (gameState.isGameOver(playerColor)) {
                 break;
             }
             gameState.drawBoard();
 
-            playerColor = YELLOW;
-            opponentPlayer.move(playerColor);
+            playerColor = opponentPlayerColor;
+            opponentPlayer.move();
         }
     }
 

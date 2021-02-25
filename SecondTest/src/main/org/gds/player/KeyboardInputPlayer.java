@@ -9,12 +9,13 @@ public class KeyboardInputPlayer extends AbstractPlayer {
 
     private final Scanner scanner;
 
-    KeyboardInputPlayer(Scanner scanner) {
+    KeyboardInputPlayer(Scanner scanner, char playerColor) {
+        super(playerColor);
         this.scanner = scanner;
     }
 
     @Override
-    public int getMoveChoice(char playerColor) {
+    public int getMoveChoice() {
         int columnChoice = 0;
         boolean validMove = false;
         while (!validMove) {
