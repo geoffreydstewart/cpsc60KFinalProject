@@ -28,6 +28,7 @@ bin
 *.iml
 .idea/
 .ipr
+out
 
 tempStuff
 io*
