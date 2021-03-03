@@ -1,14 +1,14 @@
-package sample.player;
+package org.gds.player;
 
 public class PlayerFactory {
 
-    // TODO: It could be an issue if this is static
-    public static AbstractPlayer getPlayer(int playerType, char playerColor) {
+    // TODO: Document this
+    public static AbstractPlayer getPlayer(int playerType, String playerColor) {
         if (playerType == PlayerType.UI_INPUT) {
-            return new UIPlayer(playerColor);
+            return new UIPlayer();
         }
         else if (playerType == PlayerType.COMPUTER_RANDOM) {
-            return new RandomPlayer(playerColor);
+            return new RandomPlayer();
         }
         else if (playerType == PlayerType.COMPUTER_EASY) {
             return new AIPlayer(2, playerColor);

@@ -1,6 +1,5 @@
-package sample.player;
+package org.gds.player;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
