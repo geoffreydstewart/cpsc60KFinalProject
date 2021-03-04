@@ -1,12 +1,13 @@
 package org.gds;
 
 import javafx.application.Application;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -14,29 +15,24 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
-import org.gds.disc.Disc;
-import org.gds.disc.UIDisc;
-import org.gds.gamestate.GameState;
-import org.gds.player.AbstractPlayer;
-import org.gds.player.PlayerFactory;
-import org.gds.player.PlayerType;
+import org.gds.contoller.GameController;
+import org.gds.model.disc.Disc;
+import org.gds.model.disc.UIDisc;
+import org.gds.model.GameState;
+import org.gds.contoller.player.PlayerType;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-public class Main extends Application {
-
-    AbstractPlayer player;
+public class GameView extends Application {
 
     private Stage mainStage;
     private Scene menuScene;
     private Scene gameScene;
 
-    private boolean redMove = true;
+    private final Pane discPane = new Pane();
+    private final GameController gameController = new GameController(discPane);
 
     public static void main(String[] args) {
         launch(args);
@@ -59,8 +55,7 @@ public class Main extends Application {
         Button startGameButton = new Button("Start Game");
         startGameButton.setOnAction(e -> {
             int selectedIndex = listView.getSelectionModel().getSelectedIndex();
-            // System.out.println("Selected index was " + selectedIndex);
-            player = PlayerFactory.getPlayer(selectedIndex, redMove ? Constants.RED : Constants.YELLOW);
+            gameController.initializeOpponentPlayer(selectedIndex);
             mainStage.setScene(gameScene);
         });
 
@@ -69,14 +64,13 @@ public class Main extends Application {
         layout.getChildren().addAll(menuLabel, listView, startGameButton);
         menuScene = new Scene(layout, 325, 250);
         gameScene = new Scene(createContent());
-
         mainStage.setScene(menuScene);
         mainStage.show();
     }
 
     private Parent createContent() {
         Pane root = new Pane();
-        root.getChildren().add(GameState.getInstance().getDiskPane());
+        root.getChildren().add(discPane);
         Shape gridShape = makeGrid();
         root.getChildren().add(gridShape);
         root.getChildren().addAll(makeColumns());
@@ -115,113 +109,42 @@ public class Main extends Application {
 
             final int column = x;
             rectangle.setOnMouseClicked(e -> {
-                boolean gameEnded = placeDisc(new UIDisc(redMove), column);
-                int opponentColumnChoice = player.getColumnChoice();
-                if (!gameEnded && (opponentColumnChoice != AbstractPlayer.DUMMY_COLUMN_CHOICE)) {
-                    placeDisc(new UIDisc(redMove), opponentColumnChoice);
+                Disc disc = new UIDisc(GameState.getInstance().isRedMove());
+                boolean gameEnded = gameController.placeDisc(disc, column);
+                if (!gameEnded && gameController.isComputerOpponent()) {
+                    Disc opponentDisc = new UIDisc(GameState.getInstance().isRedMove());
+                    gameEnded = gameController.placeComputerOpponentDisc(opponentDisc);
                 }
+                if (gameEnded)
+                    gameOver();
             });
             columnHighlightBlocksList.add(rectangle);
         }
         return columnHighlightBlocksList;
     }
 
-    private boolean placeDisc(Disc disc, int column) {
-        int row = Constants.ROWS - 1;
-        while (row >= 0) {
-            if (getDisc(column, row).isEmpty())
-                break;
-            row--;
-        }
-
-        if (row < 0)
-            return false;
-
-        GameState gameState = GameState.getInstance();
-        Disc[][] gameGrid = gameState.getGameGrid();
-        Pane discPane = gameState.getDiskPane();
-        gameGrid[column][row] = disc;
-        discPane.getChildren().add((Node) disc);
-        disc.setTranslateX(column * (Constants.TILE_SIZE + 7) + Constants.TILE_SIZE / 5);
-        disc.setTranslateY(row * (Constants.TILE_SIZE + 7) + Constants.TILE_SIZE / 5);
-        //if (gameState.isGameOver(redMove, column, row)) {
-        if (gameEnded(column, row)) {
-            gameOver();
-            return true;
-        }
-        redMove = !redMove;
-        return false;
-
-        // TODO: there could be an animation with the piece being dropped.
-    }
-
-    private boolean gameEnded(int column, int row) {
-        List<Point2D> vertical = IntStream.rangeClosed(row - 3, row + 3)
-            .mapToObj(r -> new Point2D(column, r))
-            .collect(Collectors.toList());
-
-        List<Point2D> horizontal = IntStream.rangeClosed(column - 3, column + 3)
-            .mapToObj(c -> new Point2D(c, row))
-            .collect(Collectors.toList());
-
-        Point2D topLeft = new Point2D(column - 3, row - 3);
-        List<Point2D> diagonal1 = IntStream.rangeClosed(0, 6)
-            .mapToObj(i -> topLeft.add(i, i))
-            .collect(Collectors.toList());
-
-        Point2D botLeft = new Point2D(column - 3, row + 3);
-        List<Point2D> diagonal2 = IntStream.rangeClosed(0, 6)
-            .mapToObj(i -> botLeft.add(i, -i))
-            .collect(Collectors.toList());
-
-        return checkRange(vertical) || checkRange(horizontal)
-            || checkRange(diagonal1) || checkRange(diagonal2);
-    }
-
-    private boolean checkRange(List<Point2D> points) {
-        int chain = 0;
-
-        for (Point2D p : points) {
-            int column = (int) p.getX();
-            int row = (int) p.getY();
-
-            Disc disc = getDisc(column, row).orElse(new UIDisc(!redMove));
-
-            if (disc.isRed() == redMove) {
-                chain++;
-                if (chain == 4) {
-                    return true;
-                }
-            } else {
-                chain = 0;
-            }
-        }
-        return false;
-    }
-
     private void gameOver() {
-        String winningColor = redMove ? Constants.RED : Constants.YELLOW;
-        String message = "Game Over. The Winner is " + winningColor + "!";
+        //TODO: refactor this
+        GameState gameState = GameState.getInstance();
+        String message;
+        String title;
+        if (gameState.noMoreTurns()) {
+            message = "Game Over. It's a tie!";
+            title = "Tie Game!";
+        }
+        else {
+            String winningColor = gameState.isRedMove() ? Constants.RED : Constants.YELLOW;
+            message = "Game Over. The Winner is " + winningColor + "!";
+            title = winningColor + " Won!";
+        }
         System.out.println(message);
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(winningColor + " Won!");
+        alert.setTitle(title);
         alert.setHeaderText(message);
         alert.setResizable(false);
         alert.setContentText("Select okay or close this to go back to the menu and start a new game.");
         alert.showAndWait();
-
-        GameState gameState = GameState.getInstance();
-        gameState.reset();
+        gameController.resetGameState();
         mainStage.setScene(menuScene);
     }
-
-    private Optional<Disc> getDisc(int column, int row) {
-        if (column < 0 || column >= Constants.COLUMNS
-            || row < 0 || row >= Constants.ROWS)
-            return Optional.empty();
-
-        Disc[][] gameGrid = GameState.getInstance().getGameGrid();
-        return Optional.ofNullable(gameGrid[column][row]);
-    }
-
 }

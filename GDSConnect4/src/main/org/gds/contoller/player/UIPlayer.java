@@ -1,4 +1,4 @@
-package org.gds.player;
+package org.gds.contoller.player;
 
 
 /**
@@ -12,13 +12,7 @@ public class UIPlayer extends AbstractPlayer {
 
     @Override
     int makeChoice() {
-        return DUMMY_COLUMN_CHOICE;
-    }
-
-    @Override
-    void pauseForEffect() {
-        // The UI Player doesn't need any pause to give the gameplay a realistic feeling
-        return;
+        return INVALID_COLUMN_CHOICE;
     }
 
 }

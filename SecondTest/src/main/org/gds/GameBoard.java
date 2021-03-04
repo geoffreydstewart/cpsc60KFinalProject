@@ -93,7 +93,7 @@ public class GameBoard {
 
     public boolean isValidMove(int columnChoice) {
         // is the columnChoice valid
-        if (columnChoice < 0 || columnChoice > gameGrid[0].length){
+        if (columnChoice < 0 || columnChoice >= gameGrid[0].length){
             return false;
         }
 

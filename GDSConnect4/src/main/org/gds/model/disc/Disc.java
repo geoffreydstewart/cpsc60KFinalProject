@@ -1,4 +1,4 @@
-package org.gds.disc;
+package org.gds.model.disc;
 
 public interface Disc {
     boolean isRed();

@@ -1,9 +1,9 @@
-package org.gds.disc;
+package org.gds.model.disc;
 
 public class VirtualDisk implements Disc{
     private final boolean red;
 
-    VirtualDisk(boolean red) {
+    public VirtualDisk(boolean red) {
         this.red = red;
     }
 

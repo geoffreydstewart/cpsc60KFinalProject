@@ -1,4 +1,4 @@
-package org.gds.player;
+package org.gds.contoller.player;
 
 import org.gds.Constants;
 
@@ -18,12 +18,4 @@ public class RandomPlayer extends AbstractPlayer {
         return ThreadLocalRandom.current().nextInt(0, Constants.COLUMNS);
     }
 
-    @Override
-    void pauseForEffect() {
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            System.out.println("Hmm, that's weird, The sleeping thread was interrupted");
-        }
-    }
 }

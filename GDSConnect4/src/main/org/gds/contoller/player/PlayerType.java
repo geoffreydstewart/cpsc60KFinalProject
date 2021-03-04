@@ -1,4 +1,4 @@
-package org.gds.player;
+package org.gds.contoller.player;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

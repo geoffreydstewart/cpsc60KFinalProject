@@ -1,4 +1,4 @@
-package org.gds.player;
+package org.gds.contoller.player;
 
 public class PlayerFactory {
 

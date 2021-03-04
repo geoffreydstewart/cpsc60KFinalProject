@@ -1,0 +1,142 @@
+package org.gds.model;
+
+import javafx.geometry.Point2D;
+import org.gds.Constants;
+import org.gds.model.disc.Disc;
+import org.gds.model.disc.UIDisc;
+import org.gds.model.disc.VirtualDisk;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+public class GameBoard {
+
+    private static final int MAX_TURNS = 42;
+
+    public static final int UNPLACED_ROW = -1;
+
+    private Disc[][] gameGrid = new Disc[Constants.COLUMNS][Constants.ROWS];
+
+    private boolean redMove = true;
+    private int numTurns = 0;
+
+    public GameBoard() {
+    }
+
+    public GameBoard(Disc[][] currentGameGrid) {
+        for (int col = 0; col < currentGameGrid.length; col++) {
+            for (int row = 0; row < currentGameGrid[0].length; row++) {
+                if (Optional.ofNullable(currentGameGrid[col][row]).isPresent()) {
+                    gameGrid[col][row] = new VirtualDisk(currentGameGrid[col][row].isRed());
+                }
+                gameGrid[col][row] = currentGameGrid[col][row];
+            }
+        }
+    }
+
+    public boolean isRedMove() {
+        return redMove;
+    }
+
+    public void toggleRedMove() {
+        redMove = !redMove;
+    }
+
+    public Disc[][] getGameGrid() {
+        return gameGrid;
+    }
+
+    public void reset() {
+        numTurns = 0;
+        redMove = true;
+        gameGrid = new Disc[Constants.COLUMNS][Constants.ROWS];
+    }
+
+    public int placeDisc(Disc disc, int column) {
+        int row = Constants.ROWS - 1;
+        while (row >= 0) {
+            if (getDisc(column, row).isEmpty())
+                break;
+            row--;
+        }
+
+        if (row < 0)
+            return UNPLACED_ROW;
+
+        gameGrid[column][row] = disc;
+        numTurns++;
+        return row;
+    }
+
+    public boolean isValidMove(int columnChoice) {
+        if (columnChoice < 0 || columnChoice >= gameGrid.length) {
+            return false;
+        }
+        return Optional.ofNullable(gameGrid[columnChoice][0]).isEmpty();
+    }
+
+    public boolean isGameOver(int column, int row) {
+        if (noMoreTurns()) {
+            return true;
+        }
+        return isWinner(column, row);
+    }
+
+    public boolean noMoreTurns() {
+        return numTurns >= MAX_TURNS;
+    }
+
+    private boolean isWinner(int column, int row) {
+        List<Point2D> vertical = IntStream.rangeClosed(row - 3, row + 3)
+            .mapToObj(r -> new Point2D(column, r))
+            .collect(Collectors.toList());
+
+        List<Point2D> horizontal = IntStream.rangeClosed(column - 3, column + 3)
+            .mapToObj(c -> new Point2D(c, row))
+            .collect(Collectors.toList());
+
+        Point2D topLeft = new Point2D(column - 3, row - 3);
+        List<Point2D> diagonal1 = IntStream.rangeClosed(0, 6)
+            .mapToObj(i -> topLeft.add(i, i))
+            .collect(Collectors.toList());
+
+        Point2D botLeft = new Point2D(column - 3, row + 3);
+        List<Point2D> diagonal2 = IntStream.rangeClosed(0, 6)
+            .mapToObj(i -> botLeft.add(i, -i))
+            .collect(Collectors.toList());
+
+        return checkRange(vertical) || checkRange(horizontal)
+            || checkRange(diagonal1) || checkRange(diagonal2);
+    }
+
+    private boolean checkRange(List<Point2D> points) {
+        int chain = 0;
+
+        for (Point2D p : points) {
+            int column = (int) p.getX();
+            int row = (int) p.getY();
+
+            Disc disc = getDisc(column, row).orElse(new UIDisc(!redMove));
+
+            if (disc.isRed() == redMove) {
+                chain++;
+                if (chain == 4) {
+                    return true;
+                }
+            } else {
+                chain = 0;
+            }
+        }
+        return false;
+    }
+
+    private Optional<Disc> getDisc(int column, int row) {
+        if (column < 0 || column >= Constants.COLUMNS
+            || row < 0 || row >= Constants.ROWS)
+            return Optional.empty();
+
+        return Optional.ofNullable(gameGrid[column][row]);
+    }
+}
