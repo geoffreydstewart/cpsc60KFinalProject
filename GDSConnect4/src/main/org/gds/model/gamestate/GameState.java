@@ -1,10 +1,18 @@
-package org.gds.model;
+package org.gds.model.gamestate;
 
 import org.gds.model.disc.Disc;
 
-public class GameState {
+/**
+ * This class uses the Singleton Design Pattern, to ensure that only a
+ * single instance of the game state representation may exist.
+ *
+ * This class is also the Proxy class in the Proxy Design Pattern. It is
+ * surrogate to the GameBoardImpl class.
+ *
+ */
+public class GameState implements GameBoard {
 
-    private static final GameBoard gameBoard = new GameBoard();
+    private static final GameBoard gameBoard = new GameBoardImpl();
 
     private static final GameState instance = new GameState();
 

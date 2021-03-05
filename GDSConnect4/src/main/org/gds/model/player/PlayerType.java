@@ -1,8 +1,7 @@
-package org.gds.contoller.player;
+package org.gds.model.player;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class PlayerType {
 
@@ -11,9 +10,6 @@ public class PlayerType {
     public static final Integer COMPUTER_EASY = 2;
     public static final Integer COMPUTER_MEDIUM = 3;
     public static final Integer COMPUTER_HARD = 4;
-
-    public static final int MIN_CHOICE = UI_INPUT;
-    public static final int MAX_CHOICE = COMPUTER_HARD;
 
     private static final String UI_INPUT_DESC = "Two player game";
     private static final String COMPUTER_RANDOM_DESC = "Game vs. random computer";
@@ -33,14 +29,6 @@ public class PlayerType {
 
     public static Map<Integer, String> getPlayerTypes() {
         return playerTypes;
-    }
-
-    public static Set<Integer> getKeySet() {
-        return playerTypes.keySet();
-    }
-
-    public static String getValue(Integer key) {
-        return playerTypes.get(key);
     }
 
 }

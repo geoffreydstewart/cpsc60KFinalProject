@@ -1,17 +1,20 @@
-package org.gds.model;
+package org.gds.model.gamestate;
 
-import javafx.geometry.Point2D;
 import org.gds.Constants;
 import org.gds.model.disc.Disc;
 import org.gds.model.disc.UIDisc;
 import org.gds.model.disc.VirtualDisk;
+import org.gds.model.player.IntegerTuple;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class GameBoard {
+/**
+ * This class is the Real Subject in the Proxy Design Pattern
+ */
+public class GameBoardImpl implements GameBoard{
 
     private static final int MAX_TURNS = 42;
 
@@ -22,10 +25,10 @@ public class GameBoard {
     private boolean redMove = true;
     private int numTurns = 0;
 
-    public GameBoard() {
+    public GameBoardImpl() {
     }
 
-    public GameBoard(Disc[][] currentGameGrid) {
+    public GameBoardImpl(Disc[][] currentGameGrid) {
         for (int col = 0; col < currentGameGrid.length; col++) {
             for (int row = 0; row < currentGameGrid[0].length; row++) {
                 if (Optional.ofNullable(currentGameGrid[col][row]).isPresent()) {
@@ -89,21 +92,21 @@ public class GameBoard {
     }
 
     private boolean isWinner(int column, int row) {
-        List<Point2D> vertical = IntStream.rangeClosed(row - 3, row + 3)
-            .mapToObj(r -> new Point2D(column, r))
+        List<IntegerTuple> vertical = IntStream.rangeClosed(row - 3, row + 3)
+            .mapToObj(r -> new IntegerTuple(column, r))
             .collect(Collectors.toList());
 
-        List<Point2D> horizontal = IntStream.rangeClosed(column - 3, column + 3)
-            .mapToObj(c -> new Point2D(c, row))
+        List<IntegerTuple> horizontal = IntStream.rangeClosed(column - 3, column + 3)
+            .mapToObj(c -> new IntegerTuple(c, row))
             .collect(Collectors.toList());
 
-        Point2D topLeft = new Point2D(column - 3, row - 3);
-        List<Point2D> diagonal1 = IntStream.rangeClosed(0, 6)
+        IntegerTuple topLeft = new IntegerTuple(column - 3, row - 3);
+        List<IntegerTuple> diagonal1 = IntStream.rangeClosed(0, 6)
             .mapToObj(i -> topLeft.add(i, i))
             .collect(Collectors.toList());
 
-        Point2D botLeft = new Point2D(column - 3, row + 3);
-        List<Point2D> diagonal2 = IntStream.rangeClosed(0, 6)
+        IntegerTuple botLeft = new IntegerTuple(column - 3, row + 3);
+        List<IntegerTuple> diagonal2 = IntStream.rangeClosed(0, 6)
             .mapToObj(i -> botLeft.add(i, -i))
             .collect(Collectors.toList());
 
@@ -111,12 +114,12 @@ public class GameBoard {
             || checkRange(diagonal1) || checkRange(diagonal2);
     }
 
-    private boolean checkRange(List<Point2D> points) {
+    private boolean checkRange(List<IntegerTuple> points) {
         int chain = 0;
 
-        for (Point2D p : points) {
-            int column = (int) p.getX();
-            int row = (int) p.getY();
+        for (IntegerTuple p : points) {
+            int column = p.x;
+            int row = p.y;
 
             Disc disc = getDisc(column, row).orElse(new UIDisc(!redMove));
 

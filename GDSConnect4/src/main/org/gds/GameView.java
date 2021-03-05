@@ -15,11 +15,10 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
-import org.gds.contoller.GameController;
 import org.gds.model.disc.Disc;
 import org.gds.model.disc.UIDisc;
-import org.gds.model.GameState;
-import org.gds.contoller.player.PlayerType;
+import org.gds.model.gamestate.GameState;
+import org.gds.model.player.PlayerType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,27 +123,31 @@ public class GameView extends Application {
     }
 
     private void gameOver() {
-        //TODO: refactor this
         GameState gameState = GameState.getInstance();
         String message;
         String title;
         if (gameState.noMoreTurns()) {
             message = "Game Over. It's a tie!";
             title = "Tie Game!";
-        }
-        else {
+        } else {
             String winningColor = gameState.isRedMove() ? Constants.RED : Constants.YELLOW;
             message = "Game Over. The Winner is " + winningColor + "!";
             title = winningColor + " Won!";
         }
         System.out.println(message);
+        Alert gameOverAlert = getGameOverAlert(message, title);
+        gameOverAlert.showAndWait();
+        gameController.resetGameState();
+        mainStage.setScene(menuScene);
+    }
+
+    Alert getGameOverAlert(String message, String title) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(message);
         alert.setResizable(false);
         alert.setContentText("Select okay or close this to go back to the menu and start a new game.");
-        alert.showAndWait();
-        gameController.resetGameState();
-        mainStage.setScene(menuScene);
+        return alert;
     }
+
 }

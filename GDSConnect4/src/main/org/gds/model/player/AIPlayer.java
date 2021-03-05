@@ -1,7 +1,12 @@
-package org.gds.player;
+package org.gds.model.player;
 
-import org.gds.GameBoard;
-import org.gds.RealOne;
+
+import org.gds.Constants;
+import org.gds.model.gamestate.GameBoard;
+import org.gds.model.gamestate.GameBoardImpl;
+import org.gds.model.gamestate.GameState;
+import org.gds.model.disc.Disc;
+import org.gds.model.disc.VirtualDisk;
 
 /**
  * This is a Concrete class in the Template design pattern
@@ -11,32 +16,24 @@ public class AIPlayer extends AbstractPlayer {
     private static final int MAX_WINNING_SCORE = 1000000;
     private static final int MIN_WINNING_SCORE = -1000000;
 
-    private static final class IntegerTuple {
-        public Integer x;
-        public Integer y;
-        public IntegerTuple(Integer x, Integer y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
 
     private final int searchDepth;
-    private final char opponentColor;
+    String computerColor;
+    String opponentColor;
 
-    public AIPlayer(int searchDepth, char playerColor) {
-        super(playerColor);
+    public AIPlayer(int searchDepth, String playerColor) {
+        playerMustChooseMove = true;
         this.searchDepth = searchDepth;
-        if (playerColor == RealOne.YELLOW)
-            opponentColor = RealOne.RED;
+        this.computerColor = playerColor;
+        if (playerColor == Constants.YELLOW)
+            opponentColor = Constants.RED;
         else
-            opponentColor = RealOne.YELLOW;
+            opponentColor = Constants.YELLOW;
     }
 
     @Override
-    public int getMoveChoice() {
+    public int makeChoice() {
         int moveChoice = alphaBetaSearch(Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
-        System.out.print("Computer player " + playerColor + " choose column: " + moveChoice);
-        System.out.println();
         return moveChoice;
     }
 
@@ -52,7 +49,8 @@ public class AIPlayer extends AbstractPlayer {
      * @param depth the number of moves it has looked ahead so far
      */
     private int alphaBetaSearch(int alpha, int beta, int depth) {
-        IntegerTuple decision = maxValue(new GameBoard(gameState.getGameGrid()), 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        GameBoard gameBoard = new GameBoardImpl(GameState.getInstance().getGameGrid());
+        IntegerTuple decision = maxValue(gameBoard, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
         return decision.x;
     }
 
@@ -65,10 +63,11 @@ public class AIPlayer extends AbstractPlayer {
 
         IntegerTuple max = new IntegerTuple(-1, 0);
 
-        for (int column = 0; column < GameBoard.NUM_COLS; column++) {
-            GameBoard newBoard = new GameBoard(board.getGameGrid());
+        for (int column = 0; column < Constants.COLUMNS; column++) {
+            GameBoardImpl newBoard = new GameBoardImpl(board.getGameGrid());
             if (newBoard.isValidMove(column)) {
-                newBoard.playMove(playerColor, column);
+                Disc disc = new VirtualDisk(computerColor == Constants.RED);
+                newBoard.placeDisc(disc, column);
                 IntegerTuple next = minValue(newBoard, depth + 1, alpha, beta);
 
                 if (max.x == -1 || next.y > max.y) {
@@ -92,10 +91,11 @@ public class AIPlayer extends AbstractPlayer {
 
         IntegerTuple min = new IntegerTuple(-1, 0);
 
-        for (int column = 0; column < GameBoard.NUM_COLS; column++) {
-            GameBoard newBoard = new GameBoard(board.getGameGrid());
+        for (int column = 0; column < Constants.COLUMNS; column++) {
+            GameBoardImpl newBoard = new GameBoardImpl(board.getGameGrid());
             if (newBoard.isValidMove(column)) {
-                newBoard.playMove(opponentColor, column);
+                Disc disc = new VirtualDisk(opponentColor == Constants.RED);
+                newBoard.placeDisc(disc, column);
                 IntegerTuple next = maxValue(newBoard, depth + 1, alpha, beta);
 
                 if (min.x == -1 || next.y < min.y) {
@@ -122,11 +122,11 @@ public class AIPlayer extends AbstractPlayer {
      * @param grid
      * @return
      */
-    public int eval(char[][] grid) {
+    public int eval(Disc[][] grid) {
         int horizontalPoints = 0, verticalPoints = 0, ascendDiagonalPoints = 0, descendDiagonalPoints = 0;
 
-        for (int row = 0; row < GameBoard.NUM_ROWS ; row++) {
-            for (int column = 0; column < GameBoard.NUM_COLS - 3; column++) {
+        for (int column = 0; column < Constants.COLUMNS - 3; column++) {
+            for (int row = 0; row < Constants.ROWS ; row++) {
                 int tempScore = calcPositionScore(grid, row, column, 0, 1);
                 horizontalPoints += tempScore;
                 if(tempScore >= MAX_WINNING_SCORE || tempScore <= MIN_WINNING_SCORE)
@@ -134,8 +134,8 @@ public class AIPlayer extends AbstractPlayer {
             }
         }
 
-        for (int row = 0; row < GameBoard.NUM_ROWS - 3; row++) {
-            for (int column = 0; column < GameBoard.NUM_COLS; column++) {
+        for (int column = 0; column < Constants.COLUMNS; column++) {
+            for (int row = 0; row < Constants.ROWS - 3; row++) {
                 int tempScore = calcPositionScore(grid, row, column, 1, 0);
                 verticalPoints += tempScore;
                 if(tempScore >= MAX_WINNING_SCORE || tempScore <= MIN_WINNING_SCORE)
@@ -143,8 +143,8 @@ public class AIPlayer extends AbstractPlayer {
             }
         }
 
-        for (int row = 3; row < GameBoard.NUM_ROWS  ; row++) {
-            for (int column = 0; column < GameBoard.NUM_COLS - 4; column++) {
+        for (int column = 0; column < Constants.COLUMNS - 4; column++) {
+            for (int row = 3; row < Constants.ROWS  ; row++) {
                 int tempScore = calcPositionScore(grid, row, column, -1, 1);
                 ascendDiagonalPoints += tempScore;
                 if(tempScore >= MAX_WINNING_SCORE || tempScore <= MIN_WINNING_SCORE)
@@ -152,8 +152,8 @@ public class AIPlayer extends AbstractPlayer {
             }
         }
 
-        for (int row = 0; row < GameBoard.NUM_ROWS - 3 ; row++) {
-            for (int column = 0; column < GameBoard.NUM_COLS - 3; column++) {
+        for (int column = 0; column < Constants.COLUMNS - 3; column++) {
+            for (int row = 0; row < Constants.ROWS - 3 ; row++) {
                 int tempScore = calcPositionScore(grid, row, column, 1, 1);
                 descendDiagonalPoints += tempScore;
                 if(tempScore >= MAX_WINNING_SCORE || tempScore <= MIN_WINNING_SCORE)
@@ -164,15 +164,17 @@ public class AIPlayer extends AbstractPlayer {
         return horizontalPoints + verticalPoints + ascendDiagonalPoints + descendDiagonalPoints;
     }
 
-    private int calcPositionScore(char[][] grid, int row, int column, int rowChange, int colChange) {
+    private int calcPositionScore(Disc[][] grid, int row, int column, int rowChange, int colChange) {
         int computerPoints = 0;
         int playerPoints = 0;
 
         for (int i = 0; i < 4; i++) {
-            if(grid[row][column] == playerColor) {
+            if((grid[column][row] != null &&
+                ((grid[column][row].isRed() ? Constants.RED : Constants.YELLOW) == computerColor))) {
                 computerPoints++;
             }
-            else if (grid[row][column] == opponentColor) {
+            else if ((grid[column][row] != null &&
+                ((grid[column][row].isRed() ? Constants.RED : Constants.YELLOW) == opponentColor))) {
                 playerPoints++;
             }
 

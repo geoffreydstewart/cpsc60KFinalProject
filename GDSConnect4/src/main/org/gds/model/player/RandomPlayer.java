@@ -1,4 +1,4 @@
-package org.gds.contoller.player;
+package org.gds.model.player;
 
 import org.gds.Constants;
 

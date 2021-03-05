@@ -1,9 +1,6 @@
-package org.gds.contoller.player;
+package org.gds.model.player;
 
-import org.gds.model.GameState;
-import org.gds.model.disc.Disc;
-
-import java.util.Optional;
+import org.gds.model.gamestate.GameState;
 
 /**
  * This is the Abstract class in the Template design pattern

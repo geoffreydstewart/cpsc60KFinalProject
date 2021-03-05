@@ -7,7 +7,7 @@ import org.gds.player.PlayerFactory;
 import java.util.Map;
 import java.util.Scanner;
 
-public class RealOne {
+public class Main {
 
     // TODO: maybe make these private again, or move these
     public final static char RED = 'R';

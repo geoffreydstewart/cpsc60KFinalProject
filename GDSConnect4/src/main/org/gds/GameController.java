@@ -1,13 +1,12 @@
-package org.gds.contoller;
+package org.gds;
 
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-import org.gds.Constants;
 import org.gds.model.disc.Disc;
-import org.gds.model.GameBoard;
-import org.gds.model.GameState;
-import org.gds.contoller.player.AbstractPlayer;
-import org.gds.contoller.player.PlayerFactory;
+import org.gds.model.gamestate.GameBoardImpl;
+import org.gds.model.gamestate.GameState;
+import org.gds.model.player.AbstractPlayer;
+import org.gds.model.player.PlayerFactory;
 
 public class GameController {
 
@@ -26,7 +25,7 @@ public class GameController {
     public boolean placeDisc(Disc disc, int column) {
         GameState gameState = GameState.getInstance();
         int rowPosition = gameState.placeDisc(disc, column);
-        if (rowPosition == GameBoard.UNPLACED_ROW) {
+        if (rowPosition == GameBoardImpl.UNPLACED_ROW) {
             return false;
         }
         discPane.getChildren().add((Node) disc);
@@ -49,7 +48,7 @@ public class GameController {
             return false;
 
         int rowPosition = gameState.placeDisc(disc, opponentColumnChoice);
-        if (rowPosition == GameBoard.UNPLACED_ROW)
+        if (rowPosition == GameBoardImpl.UNPLACED_ROW)
             return false;
 
         discPane.getChildren().add((Node) disc);
