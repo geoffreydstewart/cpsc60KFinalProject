@@ -8,14 +8,19 @@ import org.gds.model.disc.Disc;
 import org.gds.model.disc.VirtualDisc;
 
 /**
- * This is a Concrete class in the Template Method Design Pattern
+ * This is a Concrete class in the Template Method Design Pattern. 
+ * 
+ * This is also the class which implements the Artificially Intelligent computer opponent.
+ * See the {@link #alphaBetaSearch} method below for details.
  */
 public class AIPlayer extends AbstractPlayer {
 
     private static final int MAX_WINNING_SCORE = 1000000;
     private static final int MIN_WINNING_SCORE = -1000000;
 
-
+    // Allowing a configurable search depth for the alpha-beta search algorithm
+    // controls the number of future game states the algorithm will search.
+    // A higher value results in a more difficult opponent.
     private final int searchDepth;
     String computerColor;
     String opponentColor;
@@ -37,14 +42,14 @@ public class AIPlayer extends AbstractPlayer {
     }
 
     /**
-     * Determine a move by maximising the minimum gain given by opponent. This is an implementation of the
-     * alpha-beta search algorithm [1]
+     * Determine a move by maximizing the minimum gain given by opponent. This is an implementation of the
+     * Minimax search algorithm with the alpha-beta [1]
      * This is the top level function, which initiates the recursive calls to max_value and min_value
      *
      * [1] S. J. Russell and P. Norvig, Artificial Intelligence A Modern Approach, 3rd ed. Upper Saddle River, NJ:
      *     Prentice Hall, 2010, pp. 170
-     * @param alpha best score found so far by this player (always the maximising player)
-     * @param beta best score found so far by opponent (the minimising player)
+     * @param alpha best score found so far by this player (always the maximizing player)
+     * @param beta best score found so far by opponent (the minimizing player)
      * @param depth the number of moves it has looked ahead so far
      */
     private int alphaBetaSearch(int alpha, int beta, int depth) {
@@ -57,10 +62,10 @@ public class AIPlayer extends AbstractPlayer {
         int score = eval(board.getGameGrid());
 
         if (finished(depth, board, score)) {
-            return new IntegerTuple(-1, score);
+            return new IntegerTuple(INVALID_COLUMN_CHOICE, score);
         }
 
-        IntegerTuple max = new IntegerTuple(-1, 0);
+        IntegerTuple max = new IntegerTuple(INVALID_COLUMN_CHOICE, 0);
 
         for (int column = 0; column < Constants.COLUMNS; column++) {
             GameBoardImpl newBoard = new GameBoardImpl(board.getGameGrid());
@@ -69,7 +74,7 @@ public class AIPlayer extends AbstractPlayer {
                 newBoard.placeDisc(disc, column);
                 IntegerTuple next = minValue(newBoard, depth + 1, alpha, beta);
 
-                if (max.x == -1 || next.y > max.y) {
+                if (max.x == INVALID_COLUMN_CHOICE || next.y > max.y) {
                     max.x = column;
                     max.y = next.y;
                     alpha = next.y;
@@ -86,9 +91,9 @@ public class AIPlayer extends AbstractPlayer {
         int score = eval(board.getGameGrid());
 
         if (finished(depth, board, score))
-            return new IntegerTuple(-1, score);
+            return new IntegerTuple(INVALID_COLUMN_CHOICE, score);
 
-        IntegerTuple min = new IntegerTuple(-1, 0);
+        IntegerTuple min = new IntegerTuple(INVALID_COLUMN_CHOICE, 0);
 
         for (int column = 0; column < Constants.COLUMNS; column++) {
             GameBoardImpl newBoard = new GameBoardImpl(board.getGameGrid());
@@ -97,7 +102,7 @@ public class AIPlayer extends AbstractPlayer {
                 newBoard.placeDisc(disc, column);
                 IntegerTuple next = maxValue(newBoard, depth + 1, alpha, beta);
 
-                if (min.x == -1 || next.y < min.y) {
+                if (min.x == INVALID_COLUMN_CHOICE || next.y < min.y) {
                     min.x = column;
                     min.y = next.y;
                     beta = next.y;
@@ -116,10 +121,13 @@ public class AIPlayer extends AbstractPlayer {
     }
 
     /**
-     * This is the evaluation, or heuristic function used by the alpha-beta search algorithm, specific
-     * in this case, to Connect 4
+     * This is the evaluation, or heuristic function used by the alpha-beta pruning technique, specific
+     * in this case, to Connect 4 [2]
+     * 
+     * [2] X. Kang, Y. Wang, Y Hu, "Research on Different Heuristics for Minimax Algorithm Insight from Connect-4 Game", 
+     *     Journal of Intelligent Learning Systems and Applications, Volume 11, Number 2, 2019, Article ID: 90972.
      * @param grid
-     * @return
+     * @return score - the heuristic score of this game state
      */
     public int eval(Disc[][] grid) {
         int horizontalPoints = 0, verticalPoints = 0, ascendDiagonalPoints = 0, descendDiagonalPoints = 0;

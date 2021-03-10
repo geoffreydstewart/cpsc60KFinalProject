@@ -22,7 +22,7 @@ public class GameStateTest {
 
     /**
      * Test the Singleton Design Pattern for the GameState Singleton.
-     * This requires verifying the state is being maintained correctly.
+     * This requires verifying that the state is being maintained correctly.
      */
     @Test
     void testGameStateSingleton() {

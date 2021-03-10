@@ -29,7 +29,7 @@ public class GameControllerTest {
     /**
      * This tests plays a game against Hard Computer, where we choose choose column 0, when
      * the number of turns we have taken is even, and column 6 when then number of turns we
-     * have taken is odd. The Hard Computer will win this game everytime.
+     * have taken is odd. The Hard Computer will win this game every time.
      */
     @Test
     void testPlayerVsHardComputer() {
@@ -58,7 +58,7 @@ public class GameControllerTest {
 
     /**
      * This tests plays a game of the Random Computer player against Hard Computer. That is
-     * hardly a fair game! Again, the Hard Computer will win this game everytime.
+     * hardly a fair game! Again, the Hard Computer will win this game every time.
      */
     @Test
     void testRandomComputerVsHardComputer() {
