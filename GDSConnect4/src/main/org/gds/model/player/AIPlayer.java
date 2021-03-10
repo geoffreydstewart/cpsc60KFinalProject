@@ -1,15 +1,14 @@
 package org.gds.model.player;
 
-
 import org.gds.Constants;
 import org.gds.model.gamestate.GameBoard;
 import org.gds.model.gamestate.GameBoardImpl;
 import org.gds.model.gamestate.GameState;
 import org.gds.model.disc.Disc;
-import org.gds.model.disc.VirtualDisk;
+import org.gds.model.disc.VirtualDisc;
 
 /**
- * This is a Concrete class in the Template design pattern
+ * This is a Concrete class in the Template Method Design Pattern
  */
 public class AIPlayer extends AbstractPlayer {
 
@@ -66,7 +65,7 @@ public class AIPlayer extends AbstractPlayer {
         for (int column = 0; column < Constants.COLUMNS; column++) {
             GameBoardImpl newBoard = new GameBoardImpl(board.getGameGrid());
             if (newBoard.isValidMove(column)) {
-                Disc disc = new VirtualDisk(computerColor == Constants.RED);
+                Disc disc = new VirtualDisc(computerColor == Constants.RED);
                 newBoard.placeDisc(disc, column);
                 IntegerTuple next = minValue(newBoard, depth + 1, alpha, beta);
 
@@ -94,7 +93,7 @@ public class AIPlayer extends AbstractPlayer {
         for (int column = 0; column < Constants.COLUMNS; column++) {
             GameBoardImpl newBoard = new GameBoardImpl(board.getGameGrid());
             if (newBoard.isValidMove(column)) {
-                Disc disc = new VirtualDisk(opponentColor == Constants.RED);
+                Disc disc = new VirtualDisc(opponentColor == Constants.RED);
                 newBoard.placeDisc(disc, column);
                 IntegerTuple next = maxValue(newBoard, depth + 1, alpha, beta);
 

@@ -8,6 +8,9 @@ import org.gds.model.gamestate.GameState;
 import org.gds.model.player.AbstractPlayer;
 import org.gds.model.player.PlayerFactory;
 
+/**
+ * This is the Controller in the Model View Controller Design Pattern
+ */
 public class GameController {
 
     AbstractPlayer opponentPlayer;

@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This is the View in the Model View Controller Design Pattern
+ */
 public class GameView extends Application {
 
     private Stage mainStage;

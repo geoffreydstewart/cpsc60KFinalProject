@@ -5,7 +5,7 @@ import org.gds.Constants;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * This is a Concrete class in the Template design pattern
+ * This is a Concrete class in the Template Method Design Pattern
  */
 public class RandomPlayer extends AbstractPlayer {
 

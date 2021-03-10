@@ -3,7 +3,7 @@ package org.gds.model.player;
 import org.gds.model.gamestate.GameState;
 
 /**
- * This is the Abstract class in the Template design pattern
+ * This is the Abstract class in the Template Method Design Pattern
  */
 public abstract class AbstractPlayer {
 

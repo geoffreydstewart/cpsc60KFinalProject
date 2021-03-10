@@ -3,7 +3,7 @@ package org.gds.model.gamestate;
 import org.gds.Constants;
 import org.gds.model.disc.Disc;
 import org.gds.model.disc.UIDisc;
-import org.gds.model.disc.VirtualDisk;
+import org.gds.model.disc.VirtualDisc;
 import org.gds.model.player.IntegerTuple;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public class GameBoardImpl implements GameBoard{
         for (int col = 0; col < currentGameGrid.length; col++) {
             for (int row = 0; row < currentGameGrid[0].length; row++) {
                 if (Optional.ofNullable(currentGameGrid[col][row]).isPresent()) {
-                    gameGrid[col][row] = new VirtualDisk(currentGameGrid[col][row].isRed());
+                    gameGrid[col][row] = new VirtualDisc(currentGameGrid[col][row].isRed());
                 }
                 gameGrid[col][row] = currentGameGrid[col][row];
             }
