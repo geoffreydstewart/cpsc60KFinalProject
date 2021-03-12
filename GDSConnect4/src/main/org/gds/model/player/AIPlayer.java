@@ -44,7 +44,7 @@ public class AIPlayer extends AbstractPlayer {
     /**
      * Determine a move by maximizing the minimum gain given by opponent. This is an implementation of the
      * Minimax search algorithm with the alpha-beta [1]
-     * This is the top level function, which initiates the recursive calls to max_value and min_value
+     * This is the top level function, which initiates the recursive calls to maxValue and minValue
      *
      * [1] S. J. Russell and P. Norvig, Artificial Intelligence A Modern Approach, 3rd ed. Upper Saddle River, NJ:
      *     Prentice Hall, 2010, pp. 170
